@@ -54,15 +54,22 @@ public class TransactionPage {
     }
 
     public void setDate(String dateString) {
-        if(dateString != null){ // defaults to current date, null input is allowed
-            dateElement.clear();
-            dateElement.sendKeys(dateString);
+        dateElement.clear();
+        if(dateString == null){ // if the input is empty do nothing
+            return;
         }
+        dateElement.sendKeys(dateString);
     }
     public void selectStatus(String statusString) {
+        if(statusString == null){ // if the input is empty do nothing
+            return;
+        }
         statusSelect.selectByVisibleText(statusString);
     }
     public void selectType(String type) {
+        if(type == null){ // if the input is empty do nothing
+            return;
+        }
         if(type.toLowerCase().equals("withdrawal")){
             withdrawalRadioElement.click();
         }
@@ -77,6 +84,9 @@ public class TransactionPage {
         }
     }
     public void selectToAccount(String accountString) {
+        if(accountString == null){ // if the input is empty do nothing
+            return;
+        }
         if(!transferRadioElement.isSelected()){
             throw new IllegalStateException("To Account is only accessible when the transaction type is: Transfer.");
         }
@@ -87,32 +97,44 @@ public class TransactionPage {
             throw new IllegalStateException("Payee is only accessible when the transaction type is: Withdrawal or Deposit.");
         }
         payeeElement.clear();
+        if(payeeString == null){ // if the input is empty do nothing
+            return;
+        }
         payeeElement.sendKeys(payeeString);
     }
     public void selectAccount(String accountString){
+        if(accountString == null){ // if the input is empty do nothing
+            return;
+        }
         accountSelect.selectByVisibleText(accountString);
     }
     public void setAmount(String amountString){
         amountElement.clear();
+        if(amountString == null){ // if the input is empty do nothing
+            return;
+        }
         amountElement.sendKeys(amountString);
     }
     public void setCategory(String categoryString){
         categoryElement.clear();
-        if(categoryString != null){ // optional field, allow null input
-            categoryElement.sendKeys(categoryString);
+        if(categoryString == null){ // if the input is empty do nothing
+            return;
         }
+        categoryElement.sendKeys(categoryString);
     }
     public void setSubCategory(String subCategoryString){
         subCategoryElement.clear();
-        if(subCategoryString != null){ // optional field, allow null input
-            subCategoryElement.sendKeys(subCategoryString);
+        if(subCategoryString == null){ // if the input is empty do nothing
+            return;
         }
+        subCategoryElement.sendKeys(subCategoryString);
     }
     public void setNotes(String notesString){
         notesElement.clear();
-        if(notesString != null){ // optional field, allow null input
-            notesElement.sendKeys(notesString);
+        if(notesString == null){ // if the input is empty do nothing
+            return;
         }
+        notesElement.sendKeys(notesString);
     }
     public void submitTransaction(){
         submitButton.submit();
@@ -123,13 +145,13 @@ public class TransactionPage {
         }
     }
 
-    public void createTransaction(String date, String status, String type, String account, String toAccount, String payee, String amount, String category, String subcategory, String notes){
+    public void createTransaction(String date, String status, String type, String account, String payee, String toAccount, String amount, String category, String subcategory, String notes){
         setDate(date);
         selectStatus(status);
         selectType(type);
         selectAccount(account);
         setAmount(amount);
-        if(type.toLowerCase() == "transfer"){
+        if(transferRadioElement.isSelected()){
             selectToAccount(toAccount);
         }
         else{

@@ -68,8 +68,8 @@ public class TransactionsTest {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ADD TRANSACTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @Order(2)
     @ParameterizedTest(name = "testValidAddTransaction [{0} - {1}]")
-    @CsvFileSource(resources = "/ValidData.csv", numLinesToSkip = 1)
-    void testValidAddTransaction(String testID, String testName, String date, String status, String type, String account, String amount, String payee, String category, String subcategory, String notes) throws NoSuchElementException {
+    @CsvFileSource(resources = "/ValidAddData.csv", numLinesToSkip = 1)
+    void testValidAddTransaction(String testID, String testName, String date, String status, String type, String account, String amount, String payee, String toAccount, String category, String subcategory, String notes) throws NoSuchElementException {
 
         // Test that we are on the login page
         String expectedUrl = URL;
@@ -80,7 +80,7 @@ public class TransactionsTest {
 
         TransactionPage transactionPage = validGoToNewTransactionPage(landingPage);
 
-        transactionPage.createTransaction(date, status, type, account, account, payee, amount, category, subcategory, notes);
+        transactionPage.createTransaction(date, status, type, account, payee, toAccount, amount, category, subcategory, notes);
         
         // Ensure the entry was added properly by initializing the confirmation page object and confirming the success element is present and holds the correct message.
         assertDoesNotThrow(() ->{
@@ -88,13 +88,34 @@ public class TransactionsTest {
             assertEquals(confirmationPage.getConfirmationText(), "Added successfully");
         });
     }
+    @Order(3)
+    @ParameterizedTest(name = "testInvalidAddTransaction [{0} - {1}]")
+    @CsvFileSource(resources = "/invalidAddData.csv", numLinesToSkip = 1)
+    void testInvalidAddTransaction(String testID, String testName, String date, String status, String type, String account, String amount, String payee, String toAccount, String category, String subcategory, String notes) throws NoSuchElementException {
+
+        // Test that we are on the login page
+        String expectedUrl = URL;
+        String actualUrl = driver.getCurrentUrl();
+        assertEquals(expectedUrl, actualUrl);
+        
+        LandingPage landingPage = performValidLogin();
+
+        TransactionPage transactionPage = validGoToNewTransactionPage(landingPage);
+
+        transactionPage.createTransaction(date, status, type, account, payee, toAccount, amount, category, subcategory, notes);
+        
+        // Ensure the entry was not allowed to be entered by attempting to initialize the confirmation page object and being given the IllegalStateException
+        assertThrows(IllegalStateException.class, () ->{
+            new TransactionConfirmationPage(driver);
+        });
+    }
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ EDIT TRANSACTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    @Order(3)
-    @ParameterizedTest(name = "testValidAddTransaction [{0} - {1}]")
-    @CsvFileSource(resources = "/ValidData.csv", numLinesToSkip = 1)
-    void testValidEditTransaction(String testID, String testName, String date, String status, String type, String account, String amount, String payee, String category, String subcategory, String notes) throws NoSuchElementException {
+    @Order(4)
+    @ParameterizedTest(name = "testValidEditTransaction [{0} - {1}]")
+    @CsvFileSource(resources = "/ValidEditData.csv", numLinesToSkip = 1)
+    void testValidEditTransaction(String testID, String testName, String date, String status, String type, String account, String amount, String payee, String toAccount, String category, String subcategory, String notes) throws NoSuchElementException {
 
         // Test that we are on the login page
         String expectedUrl = URL;
@@ -107,10 +128,33 @@ public class TransactionsTest {
 
         TransactionPage transactionPage = validGoToEditTransactionPage(showTransactionsPage);
 
-        transactionPage.createTransaction(date, status, type, account, account, payee, amount, category, subcategory, notes);
+        transactionPage.createTransaction(date, status, type, account, payee, toAccount, amount, category, subcategory, notes);
         
         // Ensure the entry was added by initializing a ShowTransactionsPage object without an exception being thrown to confirm we are on the correct page 
         assertDoesNotThrow(() ->{
+            new ShowTransactionsPage(driver);
+        });
+    }
+    @Order(5)
+    @ParameterizedTest(name = "testInvalidEditTransaction [{0} - {1}]")
+    @CsvFileSource(resources = "/invalidEditData.csv", numLinesToSkip = 1)
+    void testInvalidEditTransaction(String testID, String testName, String date, String status, String type, String account, String amount, String payee, String toAccount, String category, String subcategory, String notes) throws NoSuchElementException {
+
+        // Test that we are on the login page
+        String expectedUrl = URL;
+        String actualUrl = driver.getCurrentUrl();
+        assertEquals(expectedUrl, actualUrl);
+        
+        LandingPage landingPage = performValidLogin();
+
+        ShowTransactionsPage showTransactionsPage = validGoToShowTransactionsPage(landingPage);
+
+        TransactionPage transactionPage = validGoToEditTransactionPage(showTransactionsPage);
+
+        transactionPage.createTransaction(date, status, type, account, payee, toAccount, amount, category, subcategory, notes);
+        
+        // Ensure the entry was not allowed to be entered by attempting to initialize the ShowTransactionsPage object and being given the IllegalStateException
+        assertThrows(IllegalStateException.class, () ->{
             new ShowTransactionsPage(driver);
         });
     }

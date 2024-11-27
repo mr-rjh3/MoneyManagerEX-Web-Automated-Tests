@@ -1,0 +1,12 @@
+Test ID,Test Name,Date,Status,Type,Account,Amount,Payee,ToAccount,Category,SubCategory,Notes
+TC-34,Invalid-Transaction-Edit-Withdrawl-Date,,None,Withdrawal,Savings Account,1000,John Doe,,Education,Tuition,
+TC-35,Invalid-Transaction-Edit-Withdrawl-Amount,11032024,None,Withdrawal,Savings Account,bbb,John Doe,,Education,Tuition,
+TC-36,Invalid-Transaction-Edit-Withdrawl-Payee,11032024,None,Withdrawal,Savings Account,45.99,"hmiio,",,Education,Tuition,
+TC-37,Invalid-Transaction-Edit-Withdrawl-Category,11032024,None,Withdrawal,Savings Account,45.99,John Doe,,Education,Tuition,
+TC-39,Invalid-Transaction-Edit-Deposit-Date,,None,Deposit,Savings Account,1000,John Doe,,Education,Tuition,
+TC-40,Invalid-Transaction-Edit-Deposit-Amount,11032024,None,Deposit,Savings Account,eeee,John Doe,,Education,Tuition,
+TC-41,Invalid-Transaction-Edit-Deposit-Payee,,None,Deposit,Savings Account,1000,,,Education,Tuition,
+TC-42,Invalid-Transaction-Edit-Deposit-Category,11032024,None,Deposit,Savings Account,55.09,John Doe,,rhvrtyn,,
+TC-44,Invalid-Transaction-Edit-Transfer-Date,,None,Transfer,Savings Account,-1000,John Doe,,Groceries,,
+TC-45,Invalid-Transaction-Edit-Transfer-Amount,11072024,None,Transfer,Savings Account,-1000,John Doe,,Groceries,,
+TC-46,Invalid-Transaction-Edit-Transfer-Category,11072024,None,Transfer,Savings Account,1000,John Doe,,,,

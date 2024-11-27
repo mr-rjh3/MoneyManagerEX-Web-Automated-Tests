@@ -1,0 +1,4 @@
+Test ID,Test Name,Date,Status,Type,Account,Amount,Payee,ToAccount,Category,SubCategory,Notes
+TC-19,Valid-Transaction-Create-Withdrawl,11072024,None,Withdrawal,Savings Account,1000,John Doe,,Groceries,,
+TC-24,Valid-Transaction-Create-Deposit,11072024,None,Deposit,Savings Account,1000,John Doe,,Groceries,,
+TC-29,Valid-Transaction-Create-Transfer,11032024,None,Transfer,Savings Account,1000,,Chequing Account,Education,Tuition,

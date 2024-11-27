@@ -1,0 +1,12 @@
+Test ID,Test Name,Date,Status,Type,Account,Amount,Payee,ToAccount,Category,SubCategory,Notes
+TC-20,Invalid-Transaction-Create-Withdrawl-Date,11070001,None,Withdrawal,Savings Account,1000,John Doe,,Groceries,,
+TC-21,Invalid-Transaction-Create-Withdrawl-Amount,11072024,None,Withdrawal,Savings Account,-1000,John Doe,,Groceries,,
+TC-22,Invalid-Transaction-Create-Withdrawl-Payee,11072024,None,Withdrawal,Savings Account,1000,,,Groceries,,
+TC-23,Invalid-Transaction-Create-Withdrawl-Category,11072024,None,Withdrawal,Savings Account,1000,John Doe,,,,
+TC-25,Invalid-Transaction-Create-Deposit-Date,11070001,None,Deposit,Savings Account,1000,John Doe,,Groceries,,
+TC-26,Invalid-Transaction-Create-Deposit-Amount,11072024,None,Deposit,Savings Account,-1000,John Doe,,Groceries,,
+TC-27,Invalid-Transaction-Create-Deposit-Payee,11072024,None,Deposit,Savings Account,1000,,,Groceries,,
+TC-28,Invalid-Transaction-Create-Deposit-Category,11072024,None,Deposit,Savings Account,1000,John Doe,,,,
+TC-30,Invalid-Transaction-Create-Transfer-Date,,None,Transfer,Savings Account,1000,,Chequing Account,Education,Tuition,
+TC-31,Invalid-Transaction-Create-Transfer-Amount,11032024,None,Transfer,Savings Account,ee,,Chequing Account,Education,Tuition,
+TC-32,Invalid-Transaction-Create-Transfer-Category,11032024,None,Transfer,Savings Account,45.77,,Chequing Account,,,

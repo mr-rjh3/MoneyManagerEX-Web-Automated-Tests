@@ -1,2 +1,0 @@
-Test ID,Test Name,Date,Status,Type,Account,Amount,Payee,Category,SubCategory,Notes
-TC-19,Valid-Transaction-Create-Withdrawl,11/7/2024,None,Withdrawal,None,1000,John Doe,Groceries,,
