@@ -12,6 +12,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import MoneyManagerPages.LandingPage;
 import MoneyManagerPages.LoginPage;
+import MoneyManagerPages.ShowTransactionsPage;
 import MoneyManagerPages.TransactionConfirmationPage;
 import MoneyManagerPages.TransactionPage;
 
@@ -26,6 +27,11 @@ import java.util.List;
 public class TransactionsTest {
 
     static final String URL = "http://localhost:8080/";// Address Book URL
+
+    // TODO: Change to actual values from test script
+    static final String VALID_USERNAME = "Riley";
+    static final String VALID_PASSWORD = "password";
+
 
     WebDriver driver;
     WebDriverWait wait;
@@ -43,15 +49,24 @@ public class TransactionsTest {
         // See FailureLogger.java to see AfterEach logic
     }
 
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ LOGIN ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ LOGIN TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @Order(0)
     @Test
     void validLogin(){
+        performValidLogin();
+    }
+    @Order(1)
+    @ParameterizedTest
+    @CsvSource({"nonexistantuser, password", "Riley, WrongPass123"}) // TODO change to actual values from test scripts
+    void invalidLogin(String username, String password){
         LoginPage loginPage = new LoginPage(driver);
-        loginPage.login("Riley", "password");
+        assertThrows(IllegalStateException.class, ()->{
+            loginPage.login(username, password);
+        });
     }
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ADD TRANSACTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    @Order(1)
+    @Order(2)
     @ParameterizedTest(name = "testValidAddTransaction [{0} - {1}]")
     @CsvFileSource(resources = "/ValidData.csv", numLinesToSkip = 1)
     void testValidAddTransaction(String testID, String testName, String date, String status, String type, String account, String amount, String payee, String category, String subcategory, String notes) throws NoSuchElementException {
@@ -61,78 +76,68 @@ public class TransactionsTest {
         String actualUrl = driver.getCurrentUrl();
         assertEquals(expectedUrl, actualUrl);
         
-        // Login
-        LoginPage loginPage = new LoginPage(driver);
-        assertDoesNotThrow(() -> {
-            LandingPage landingPage = loginPage.login("Riley", "password");
-            assertDoesNotThrow(()->{
-                TransactionPage transactionPage = landingPage.clickNewTransaction();
-                transactionPage.createTransaction(date, status, type, account, account, payee, amount, category, subcategory, notes);
-            });
-        });
+        LandingPage landingPage = performValidLogin();
+
+        TransactionPage transactionPage = validGoToNewTransactionPage(landingPage);
+
+        transactionPage.createTransaction(date, status, type, account, account, payee, amount, category, subcategory, notes);
         
-        // Ensure the entry was added properly by initializing the confirmation page object and the success element is present and holds the correct message.
+        // Ensure the entry was added properly by initializing the confirmation page object and confirming the success element is present and holds the correct message.
         assertDoesNotThrow(() ->{
             TransactionConfirmationPage confirmationPage = new TransactionConfirmationPage(driver);
             assertEquals(confirmationPage.getConfirmationText(), "Added successfully");
         });
     }
 
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ LIST TRANSACTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ EDIT TRANSACTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ VIEW TRANSACTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DUPLICATE TRANSACTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @Order(3)
+    @ParameterizedTest(name = "testValidAddTransaction [{0} - {1}]")
+    @CsvFileSource(resources = "/ValidData.csv", numLinesToSkip = 1)
+    void testValidEditTransaction(String testID, String testName, String date, String status, String type, String account, String amount, String payee, String category, String subcategory, String notes) throws NoSuchElementException {
+
+        // Test that we are on the login page
+        String expectedUrl = URL;
+        String actualUrl = driver.getCurrentUrl();
+        assertEquals(expectedUrl, actualUrl);
+        
+        LandingPage landingPage = performValidLogin();
+
+        ShowTransactionsPage showTransactionsPage = validGoToShowTransactionsPage(landingPage);
+
+        TransactionPage transactionPage = validGoToEditTransactionPage(showTransactionsPage);
+
+        transactionPage.createTransaction(date, status, type, account, account, payee, amount, category, subcategory, notes);
+        
+        // Ensure the entry was added by initializing a ShowTransactionsPage object without an exception being thrown to confirm we are on the correct page 
+        assertDoesNotThrow(() ->{
+            new ShowTransactionsPage(driver);
+        });
+    }
 
     // ==================================== HELPER METHODS ====================================
 
-    /**
-     * Takes in test data and inputs the data into the addressbook form.
-     * 
-     * @param testID       - The test ID for the current test. Usually in the form:
-     *                     TC-XX
-     * @param testData     - The data for all the text inputs for the form. This
-     *                     will be retrieved from a CSV file
-     * @param dropdownData - The data for all the dropdown forms. This will be
-     *                     retrieved from a CSV file
-     * @throws NoSuchElementException - If the driver cannot find an element this
-     *                                will be thrown, likely cause is an issue in
-     *                                the test data.
-     */
-    void enterTestDataIntoTransactionForm(String date, String status, String type, String account, String amount, String payee, String category, String subcategory, String notes) {
-        
-        driver.findElement(By.id("Date")).sendKeys(date);
-        driver.findElement(By.id("Status")); //TODO handle the select
-
-        if(type == "Withdrawl"){
-            driver.findElement(By.id("Type_Withdrawal")).click();
-            driver.findElement(By.id("Payee")).sendKeys(payee);
+        LandingPage performValidLogin(){
+            LoginPage loginPage = new LoginPage(driver);
+            return assertDoesNotThrow(()->{
+                return loginPage.login(VALID_USERNAME, VALID_PASSWORD);
+            });
+        } 
+        TransactionPage validGoToNewTransactionPage(LandingPage landingPage){
+            return assertDoesNotThrow(() -> {
+                return landingPage.clickNewTransaction();
+            });
         }
-        else if(type == "Deposit"){
-            driver.findElement(By.id("Type_Deposit")).click();
-            driver.findElement(By.id("Payee")).sendKeys(payee);
+        ShowTransactionsPage validGoToShowTransactionsPage(LandingPage landingPage){
+            return assertDoesNotThrow(() -> {
+                return landingPage.clickShowTransactions();
+            });
         }
-        else if(type == "Transfer"){
-            driver.findElement(By.id("Type_Transfer")).click();
-            // Only this transaction type removes payee and adds a new dropdown "To Account"
-            driver.findElement(By.id("ToAccount")); //TODO handle the select
-
-        }
-        else {
-            throw new InvalidParameterException("Trasaction Type is invalid!!");
+        TransactionPage validGoToEditTransactionPage(ShowTransactionsPage showTransactionsPage){
+            return assertDoesNotThrow(() -> {
+                return showTransactionsPage.clickFirstEditTransactionButton();
+            });
         }
 
-        driver.findElement(By.id("Account")); // TODO: handle the select
-
-        driver.findElement(By.id("Amount")).sendKeys(amount);
-        driver.findElement(By.id("Category")).sendKeys(category);
-        driver.findElement(By.id("SubCategory")).sendKeys(subcategory);
-        driver.findElement(By.id("Notes")).sendKeys(notes);
-
-        // Submit the entry
-        driver.findElement(By.id("SubmitButton")).submit();
-    }
 
 }

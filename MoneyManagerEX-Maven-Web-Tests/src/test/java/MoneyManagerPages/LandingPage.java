@@ -34,6 +34,10 @@ public class LandingPage {
         newTrasactionButton.click();
         return new TransactionPage(driver);
     }
+    public ShowTransactionsPage clickShowTransactions(){
+        showTrasactionButton.click();
+        return new ShowTransactionsPage(driver);
+    }
 
 
 }
